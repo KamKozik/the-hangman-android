@@ -1,8 +1,10 @@
 package algorytmiczne.swiry;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.view.View;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,5 +20,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         this.socketSingleton= new SocketSingleton();
         this.socketSingleton = socketSingleton.getInstance();
+    }
+
+    public void changeActivity(View view) {
+        Intent intent = new Intent(MainActivity.this, TestActivity.class);
+        startActivity(intent);
     }
 }
