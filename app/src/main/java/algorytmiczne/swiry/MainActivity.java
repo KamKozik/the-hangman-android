@@ -1,12 +1,9 @@
 package algorytmiczne.swiry;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatButton;
 import android.view.View;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -24,9 +21,7 @@ public class MainActivity extends Activity {
     }
 
     public void onPlayButtonClicked(View view) {
-//        Toast.makeText(getApplicationContext(), "Play button clicked", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(MainActivity.this, GameActivity.class);
-        //intent.putextra
-        MainActivity.this.startActivity(intent);
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
     }
 }
