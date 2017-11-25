@@ -7,10 +7,10 @@
     android:background="@drawable/bg"
     tools:context="algorytmiczne.swiry.MainActivity">
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/chalkboard"
+        app:fontFamily="@font/appfont"
         android:text="@string/wisielec_title"
         android:textColor="@color/colorPrimary"
         android:textSize="48sp"
@@ -20,10 +20,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.05"/>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/chalkboard"
+        app:fontFamily="@font/appfont"
         android:text="@string/wisielec_subtitle"
         android:textColor="@color/colorPrimary"
         android:textSize="12sp"
@@ -34,10 +34,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.18" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/chalkboard"
+        app:fontFamily="@font/appfont"
         android:text="@string/enter_ip_address"
         android:textColor="@color/colorPrimary"
         android:textSize="14sp"
@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="text"
-        android:text="@string/ip_address"
+        android:text="@string/ip_address_default"
         android:textColor="@color/colorPrimary"
         android:theme="@style/AppTheme"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -64,10 +64,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.45"/>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/chalkboard"
+        app:fontFamily="@font/appfont"
         android:text="@string/enter_username"
         android:textColor="@color/colorPrimary"
         android:textSize="14sp"
@@ -95,10 +95,12 @@
         app:layout_constraintVertical_bias="0.65"/>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/playButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/play_button_text"
+        android:textSize="24sp"
+        android:onClick="onPlayButtonClicked"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
