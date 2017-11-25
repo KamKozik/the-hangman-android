@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.Gravity;
@@ -13,17 +14,21 @@ import android.widget.Space;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
+import shared.MessageType;
+
 import static android.content.ContentValues.TAG;
 
 public class GameActivity extends Activity {
 
     static final String AVAILABLE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private SocketSingleton socketSingleton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
+        this.socketSingleton= new SocketSingleton();
+        socketSingleton = socketSingleton.getInstance();
         View decorView = getWindow().getDecorView();
 
         // Hide the status bar
