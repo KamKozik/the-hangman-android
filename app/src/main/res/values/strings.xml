@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">Wisielec</string>
+    <string name="app_name">The Hangman</string>
+    <string name="wisielec_title">THE HANGMAN</string>
+    <string name="wisielec_subtitle">Multiplayer Hangman game!</string>
+    <string name="enter_ip_address">Enter servers IP address:</string>
+    <string name="ip_address">IP Address</string>
+    <string name="username">Username</string>
+    <string name="enter_username">Enter your username:</string>
+    <string name="play_button_text">PLAY</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="ip_address_default">127.0.0.1</string>
+    <string name="hangman_description">Hangman Description</string>
 </resources>
