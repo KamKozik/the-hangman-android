@@ -9,4 +9,7 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="LetterView">
+        <attr name="letter" format="string" />
+    </declare-styleable>
 </resources>
