@@ -11,9 +11,15 @@ import shared.Message;
 import shared.MessageType;
 
 public class MainActivity extends Activity {
+    public boolean gameIsReady=false;
+    public boolean waiting=true;
+
     private SocketSingleton socketSingleton;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.socketSingleton= new SocketSingleton();
@@ -29,6 +35,7 @@ public class MainActivity extends Activity {
         decorView.setSystemUiVisibility(uiOptions);
         final EditText mEdit   = (EditText)findViewById(R.id.ipAddressEditText);
         Button playButton = findViewById(R.id.playButton);
+        final MainActivity main = this;
         playButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -36,12 +43,18 @@ public class MainActivity extends Activity {
 
                 SocketSingleton.initializeIP(mEdit.getText().toString());
 
-                socketSingleton = socketSingleton.getInstance();
+                socketSingleton = socketSingleton.getInstance(main);
                 EditText loginEditText   = (EditText)findViewById(R.id.usernameEditText);
                 socketSingleton.sendLogin(loginEditText.getText().toString());
                 Intent intent = new Intent(MainActivity.this, GameActivity.class);
-                startActivity(intent);
+                while(waiting){
+
+                    if(gameIsReady)startActivity(intent);
+
+                }
+
             }
         });
     }
+
 }

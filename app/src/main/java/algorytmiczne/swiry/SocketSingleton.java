@@ -32,8 +32,16 @@ public class SocketSingleton {
     private static ObjectInputStream objectInputStream;
     private static ObjectOutputStream objectOutputStream;
     private static GameActivity game;
+    private static MainActivity mainActivity;
 
     public SocketSingleton() {
+    }
+
+    public  SocketSingleton getInstance(MainActivity view) {
+        mainActivity = view;
+        if (instance == null)
+            initSingleton();
+        return instance;
     }
 
     public  SocketSingleton getInstance(GameActivity view) {
@@ -42,6 +50,7 @@ public class SocketSingleton {
             initSingleton();
         return instance;
     }
+
     public  SocketSingleton getInstance() {
         if (instance == null)
             initSingleton();
@@ -61,6 +70,7 @@ public class SocketSingleton {
 
     public void sendLogin(String login){
         sendMessage(new Message(MessageType.Connect,login));
+        waiting();
     }
 
     public void sendLetter(Character letter){
@@ -106,6 +116,21 @@ public class SocketSingleton {
         return null;
     }
 
+    private void goodLogin() {
+        mainActivity.gameIsReady=true;
+        mainActivity.waiting=false;
+    }
+
+    private void waiting() {
+        mainActivity.gameIsReady=false;
+        mainActivity.waiting=true;
+    }
+
+    private void wrongLogin() {
+        mainActivity.gameIsReady=false;
+        mainActivity.waiting=false;
+    }
+
     private void notifyToRedraw(){
         if(game != null)
             game.gameStateChanges(gameState);
@@ -116,6 +141,8 @@ public class SocketSingleton {
     }
 
     class ConnectingThread implements Runnable {
+        boolean printMessage;
+
         public void run() {
             try {
                 InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
@@ -139,13 +166,32 @@ public class SocketSingleton {
                         case GameState:   // server wants to disconnect
                             gameState= (GameState)message.data;
                             System.out.println("Get new game state");
-                            notifyToRedraw();
-                            System.out.println("Notify to redrawing");
+
+                            if(game==null){
+                                System.out.println("Game has started!");
+                                goodLogin();
+                            }
+                            else{
+                                notifyToRedraw();
+                                System.out.println("Notify to redrawing");
+
+                            }
                             return;
+                        case Ping:
+                            sendMessage(new Message(MessageType.Ping));
+                            printMessage = false;
+                            break;
+
+                        case LoginTaken:
+                            sendMessage(new Message(MessageType.Ping));
+                            printMessage = true;
+                            wrongLogin();
+                            break;
                         default:
                             System.out.println("Unknown message type received from server.");
                     }
-                    System.out.println("Message from server: " + message.type + ": " + message.data);
+                    if (printMessage)
+                        System.out.println("Message from server: " + message.type + ": " + message.data);
                 }
             } catch (UnknownHostException e1) {
                 e1.printStackTrace();
@@ -154,4 +200,6 @@ public class SocketSingleton {
             }
         }
     }
+
+
 }
