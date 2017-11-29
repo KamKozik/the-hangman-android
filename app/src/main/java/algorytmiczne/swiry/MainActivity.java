@@ -7,6 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import shared.Message;
+import shared.MessageType;
+
 public class MainActivity extends Activity {
     private SocketSingleton socketSingleton;
     @Override
@@ -30,11 +33,12 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View view) {
-                SocketSingleton.SERVER_IP=mEdit.getText().toString();
-                System.out.println(SocketSingleton.SERVER_IP);
+
+                SocketSingleton.initializeIP(mEdit.getText().toString());
+
                 socketSingleton = socketSingleton.getInstance();
-
-
+                EditText loginEditText   = (EditText)findViewById(R.id.usernameEditText);
+                socketSingleton.sendLogin(loginEditText.getText().toString());
                 Intent intent = new Intent(MainActivity.this, GameActivity.class);
                 startActivity(intent);
             }

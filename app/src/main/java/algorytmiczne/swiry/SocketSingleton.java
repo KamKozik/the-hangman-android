@@ -1,5 +1,9 @@
 package algorytmiczne.swiry;
 
+import android.app.Activity;
+import android.view.View;
+import android.view.ViewGroup;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -12,7 +16,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import shared.GameState;
 import shared.Message;
+import shared.MessageType;
 
 public class SocketSingleton {
     private static Socket socket;
@@ -20,21 +26,27 @@ public class SocketSingleton {
     private DataOutputStream output;
     private static SocketSingleton instance;
     private static  short SERVER_PORT = 6969;
-    public static String SERVER_IP ;
+    private static String SERVER_IP ;
     private static boolean exit = false;
+    private static GameState gameState= new GameState();
     private static ObjectInputStream objectInputStream;
     private static ObjectOutputStream objectOutputStream;
-
+    private static GameActivity game;
 
     public SocketSingleton() {
     }
 
+    public  SocketSingleton getInstance(GameActivity view) {
+        game = view;
+        if (instance == null)
+            initSingleton();
+        return instance;
+    }
     public  SocketSingleton getInstance() {
         if (instance == null)
             initSingleton();
         return instance;
     }
-
     public void initSingleton() {
         if (instance == null) {
             instance = new SocketSingleton();
@@ -43,10 +55,32 @@ public class SocketSingleton {
         }
     }
 
+    public static void initializeIP(String IP){
+        SERVER_IP=IP;
+    }
+
+    public void sendLogin(String login){
+        sendMessage(new Message(MessageType.Connect,login));
+    }
+
+    public void sendLetter(Character letter){
+        sendMessage(new Message(MessageType.PickLetter,letter));
+    }
+
+    public void sendWord(String word){
+        sendMessage(new Message(MessageType.PickWord,word));
+    }
 
     public void sendMessage(Message message) {
         try {
-            objectOutputStream.writeObject(message);
+            boolean flag = true;
+            while(flag)        {
+                if(objectOutputStream!=null){
+                    objectOutputStream.writeObject(message);
+                    flag = false;
+                }
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -72,6 +106,15 @@ public class SocketSingleton {
         return null;
     }
 
+    private void notifyToRedraw(){
+        if(game != null)
+            game.gameStateChanges(gameState);
+    }
+
+    public GameState getGameState(){
+        return gameState;
+    }
+
     class ConnectingThread implements Runnable {
         public void run() {
             try {
@@ -92,6 +135,12 @@ public class SocketSingleton {
                         case Disconnect:   // server wants to disconnect
                             exit = true;
                             System.out.println("Server closed connection. Closing client.");
+                            return;
+                        case GameState:   // server wants to disconnect
+                            gameState= (GameState)message.data;
+                            System.out.println("Get new game state");
+                            notifyToRedraw();
+                            System.out.println("Notify to redrawing");
                             return;
                         default:
                             System.out.println("Unknown message type received from server.");
