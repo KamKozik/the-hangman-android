@@ -35,6 +35,7 @@ public class GameActivity extends Activity {
     static final String AVAILABLE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private SocketSingleton socketSingleton;
     static final int LINE_MAX_WIDTH = 12;
+    private String currentWord="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,20 +65,47 @@ public class GameActivity extends Activity {
         gameStateChanges(socketSingleton.getGameState());
     }
 
-    public void gameStateChanges(GameState newGameState){
+    public void gameStateChanges(final GameState newGameState){
         System.out.println("Udało się!");
         final GameState copyGameState=newGameState;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 /************************* tutaj wpisujemy zmiany, które następują po przyjściu nowego stanu gry*********************/
+                //ustawienie graczy
                 TextView loginEditText   = (TextView)findViewById(R.id.usersPaceholder);
                 String usersPlaceholder = "";
                 for (int i = 0; i < 4; i++) {
+                    if(copyGameState.players[i].hasTurn) usersPlaceholder += "T:";
                     usersPlaceholder += copyGameState.players[i].login + " ";
                     usersPlaceholder += copyGameState.players[i].points + " ";
+                    if(copyGameState.players[i].isConnected) usersPlaceholder += " :(";
                 }
                 loginEditText.setText(usersPlaceholder);
+
+                int myNumberPlayer= 0;
+                for (int i=0;i<4;i++) {
+                    if (copyGameState.players[i].login.equals(MainActivity.myLogin)) myNumberPlayer=i;
+                }
+
+                //update hangmana
+
+                //update blokowania literek
+
+                //czy nasza tura
+                boolean myTurn= copyGameState.players[myNumberPlayer].hasTurn;
+                if(myTurn){
+                    //czy jest tura na odgadnięcie litery
+                    if(copyGameState.phase== GameState.Phase.Guess){
+
+                    }
+                    //czy jest tura na wybór słowa
+                    if(copyGameState.phase== GameState.Phase.ChoosingWord){
+
+                    }
+                }
+
+                //
                 /*****************************************************************************************************************/
             }
         });

@@ -13,7 +13,7 @@ import shared.MessageType;
 public class MainActivity extends Activity {
     public boolean gameIsReady=false;
     public boolean waiting=true;
-
+    public static String myLogin;
     private SocketSingleton socketSingleton;
 
 
@@ -45,6 +45,7 @@ public class MainActivity extends Activity {
 
                 socketSingleton = socketSingleton.getInstance(main);
                 EditText loginEditText   = (EditText)findViewById(R.id.usernameEditText);
+                myLogin= loginEditText.getText().toString();
                 socketSingleton.sendLogin(loginEditText.getText().toString());
                 Intent intent = new Intent(MainActivity.this, GameActivity.class);
                 while(waiting){
