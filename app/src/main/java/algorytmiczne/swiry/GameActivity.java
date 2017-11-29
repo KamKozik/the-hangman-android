@@ -1,18 +1,26 @@
 package algorytmiczne.swiry;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Space;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
+
+import shared.GameState;
+import shared.MessageType;
 
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -25,13 +33,15 @@ import static android.content.ContentValues.TAG;
 public class GameActivity extends Activity {
 
     static final String AVAILABLE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private SocketSingleton socketSingleton;
     static final int LINE_MAX_WIDTH = 12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setContentView(new myview(this));
         setContentView(R.layout.activity_game);
-
+        this.socketSingleton= new SocketSingleton();
         View decorView = getWindow().getDecorView();
 
         // Hide the status bar
@@ -47,7 +57,36 @@ public class GameActivity extends Activity {
         drawWord("BETTER SAFE");
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        socketSingleton = socketSingleton.getInstance(this);
+    }
+
+    public void gameStateChanges(GameState newGameState){
+        System.out.println("Udało się!");
+        final GameState copyGameState=newGameState;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                /************************* tutaj wpisujemy zmiany, które następują po przyjściu nowego stanu gry*********************/
+                TextView loginEditText   = (TextView)findViewById(R.id.usersPaceholder);
+                String usersPlaceholder = "";
+                for (int i = 0; i < 4; i++) {
+                    usersPlaceholder += copyGameState.players[i].login + " ";
+                    usersPlaceholder += copyGameState.players[i].points + " ";
+                }
+                loginEditText.setText(usersPlaceholder);
+                /*****************************************************************************************************************/
+            }
+        });
+
+
+    }
+
+    public void fillLettersGridLayout() {
     public void createKeyboard() {
+
         TableLayout table = findViewById(R.id.lettersTableLayout);
         Log.d(TAG, "Width :" + table.getWidth());
         int alphabetIndexer = 0;
