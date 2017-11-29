@@ -1,6 +1,7 @@
 package algorytmiczne.swiry;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,6 +15,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -76,7 +79,7 @@ public class GameActivity extends Activity {
                 TextView loginEditText = (TextView) findViewById(R.id.usersPaceholder);
                 String usersPlaceholder = "";
                 for (int i = 0; i < 2; i++) {
-                    if (copyGameState.players[i].hasTurn) usersPlaceholder += "T:";
+                    if (copyGameState.players[i].hasTurn) usersPlaceholder += ":";
                     usersPlaceholder += copyGameState.players[i].login + " ";
                     usersPlaceholder += copyGameState.players[i].points + " ";
                     if (!copyGameState.players[i].isConnected) usersPlaceholder += " :( ";
@@ -90,20 +93,62 @@ public class GameActivity extends Activity {
                 }
 
                 //update hangmana
-
+                ImageView hangman = findViewById(R.id.imageView);
+                switch (copyGameState.hangmanHealth) {
+                    case 7:
+                        hangman.setImageResource(R.drawable.stage2);
+                        break;
+                    case 6:
+                        hangman.setImageResource(R.drawable.stage3);
+                        break;
+                    case 5:
+                        hangman.setImageResource(R.drawable.stage4);
+                        break;
+                    case 4:
+                        hangman.setImageResource(R.drawable.stage5);
+                        break;
+                    case 3:
+                        hangman.setImageResource(R.drawable.stage6);
+                        break;
+                    case 2:
+                        hangman.setImageResource(R.drawable.stage7);
+                        break;
+                    case 1:
+                        hangman.setImageResource(R.drawable.stage8);
+                        break;
+                    case 0:
+                        hangman.setImageResource(R.drawable.stage9);
+                        break;
+                }
                 //update blokowania literek
+                for (int i = 0; i < 26; i++) {
+                    Button button = findViewById(300 + i);
+                    Character a = button.getText().toString().toUpperCase().charAt(0);
+                    button.setEnabled(copyGameState.keyboard.get(a));
+                }
 
                 //czy nasza tura
                 boolean myTurn = copyGameState.players[myNumberPlayer].hasTurn;
                 if (myTurn) {
                     //czy jest tura na odgadnięcie litery
                     if (copyGameState.phase == GameState.Phase.Guess) {
+                        final EditText wordInput = new EditText(GameActivity.this);
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.MATCH_PARENT);
+                        wordInput.setLayoutParams(lp);
 
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(GameActivity.this);
+                        alertDialogBuilder.setTitle("Enter your word here");
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.setView(wordInput);
+                        alertDialog.show();
                     }
                     //czy jest tura na wybór słowa
                     if (copyGameState.phase == GameState.Phase.ChoosingWord) {
 
-                    }else{
+
+                    } else {
                         drawWord(copyGameState.word);
                     }
                 }

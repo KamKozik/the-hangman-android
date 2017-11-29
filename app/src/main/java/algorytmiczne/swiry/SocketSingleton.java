@@ -25,10 +25,10 @@ public class SocketSingleton {
     private DataInputStream input;
     private DataOutputStream output;
     private static SocketSingleton instance;
-    private static  short SERVER_PORT = 6969;
-    private static String SERVER_IP ;
+    private static short SERVER_PORT = 6969;
+    private static String SERVER_IP;
     private static boolean exit = false;
-    private static GameState gameState= new GameState();
+    private static GameState gameState = new GameState();
     private static ObjectInputStream objectInputStream;
     private static ObjectOutputStream objectOutputStream;
     private static GameActivity game;
@@ -37,25 +37,26 @@ public class SocketSingleton {
     public SocketSingleton() {
     }
 
-    public  SocketSingleton getInstance(MainActivity view) {
+    public SocketSingleton getInstance(MainActivity view) {
         mainActivity = view;
         if (instance == null)
             initSingleton();
         return instance;
     }
 
-    public  SocketSingleton getInstance(GameActivity view) {
+    public SocketSingleton getInstance(GameActivity view) {
         game = view;
         if (instance == null)
             initSingleton();
         return instance;
     }
 
-    public  SocketSingleton getInstance() {
+    public SocketSingleton getInstance() {
         if (instance == null)
             initSingleton();
         return instance;
     }
+
     public void initSingleton() {
         if (instance == null) {
             instance = new SocketSingleton();
@@ -64,43 +65,41 @@ public class SocketSingleton {
         }
     }
 
-    public static void initializeIP(String IP){
-        SERVER_IP=IP;
+    public static void initializeIP(String IP) {
+        SERVER_IP = IP;
     }
 
-    public void sendLogin(String login){
-        sendMessage(new Message(MessageType.Connect,login));
+    public void sendLogin(String login) {
+        sendMessage(new Message(MessageType.Connect, login));
         waiting();
     }
 
-    public void sendLetter(Character letter){
+    public void sendLetter(Character letter) {
         System.out.println("pick letter " + letter);
-        sendMessage(new Message(MessageType.PickLetter,letter));
+        sendMessage(new Message(MessageType.PickLetter, letter));
     }
 
-    public void sendWord(String word){
-        sendMessage(new Message(MessageType.PickWord,word));
+    public void sendWord(String word) {
+        sendMessage(new Message(MessageType.PickWord, word));
     }
 
     public void sendMessage(Message message) {
 
-            new Thread(() -> {
-                boolean flag=true;
-                try {
-                    while(flag){
-                        if(objectOutputStream!=null){
-                            objectOutputStream.writeObject(message);
-                            flag=false;
-                        }
-
+        new Thread(() -> {
+            boolean flag = true;
+            try {
+                while (flag) {
+                    if (objectOutputStream != null) {
+                        objectOutputStream.writeObject(message);
+                        flag = false;
                     }
 
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            }).start();
 
-
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
 
 
     }
@@ -126,26 +125,26 @@ public class SocketSingleton {
     }
 
     private void goodLogin() {
-        mainActivity.gameIsReady=true;
-        mainActivity.waiting=false;
+        mainActivity.gameIsReady = true;
+        mainActivity.waiting = false;
     }
 
     private void waiting() {
-        mainActivity.gameIsReady=false;
-        mainActivity.waiting=true;
+        mainActivity.gameIsReady = false;
+        mainActivity.waiting = true;
     }
 
     private void wrongLogin() {
-        mainActivity.gameIsReady=false;
-        mainActivity.waiting=false;
+        mainActivity.gameIsReady = false;
+        mainActivity.waiting = false;
     }
 
-    private void notifyToRedraw(){
-        if(game != null)
+    private void notifyToRedraw() {
+        if (game != null)
             game.gameStateChanges(gameState);
     }
 
-    public GameState getGameState(){
+    public GameState getGameState() {
         return gameState;
     }
 
@@ -169,22 +168,21 @@ public class SocketSingleton {
                         return;
                     switch (message.type) {
                         case Connect:   // server wants to disconnect
-                            System.out.println((String)message.data);
+                            System.out.println((String) message.data);
                             break;
                         case Disconnect:   // server wants to disconnect
                             exit = true;
                             System.out.println("Server closed connection. Closing client.");
                             return;
                         case GameState:   // server wants to disconnect
-                            gameState= (GameState)message.data;
+                            gameState = (GameState) message.data;
                             System.out.println("Get new game state");
 
-                            if(mainActivity.waiting){
+                            if (mainActivity.waiting) {
                                 System.out.println("Game has started!");
                                 goodLogin();
                                 notifyToRedraw();
-                            }
-                            else{
+                            } else {
                                 notifyToRedraw();
                                 System.out.println("Notify to redrawing");
 
