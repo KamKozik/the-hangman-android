@@ -61,6 +61,7 @@ public class GameActivity extends Activity {
     protected void onResume(){
         super.onResume();
         socketSingleton = socketSingleton.getInstance(this);
+        gameStateChanges(socketSingleton.getGameState());
     }
 
     public void gameStateChanges(GameState newGameState){
@@ -84,7 +85,7 @@ public class GameActivity extends Activity {
 
     }
 
-    public void fillLettersGridLayout() {
+
     public void createKeyboard() {
 
         TableLayout table = findViewById(R.id.lettersTableLayout);

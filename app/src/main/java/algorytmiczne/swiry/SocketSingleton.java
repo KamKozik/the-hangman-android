@@ -167,9 +167,10 @@ public class SocketSingleton {
                             gameState= (GameState)message.data;
                             System.out.println("Get new game state");
 
-                            if(game==null){
+                            if(mainActivity.waiting){
                                 System.out.println("Game has started!");
                                 goodLogin();
+                                notifyToRedraw();
                             }
                             else{
                                 notifyToRedraw();
