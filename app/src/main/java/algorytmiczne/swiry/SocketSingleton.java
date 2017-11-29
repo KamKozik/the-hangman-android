@@ -177,14 +177,16 @@ public class SocketSingleton {
                                 System.out.println("Notify to redrawing");
 
                             }
-                            return;
+                            break;
                         case Ping:
                             sendMessage(new Message(MessageType.Ping));
+                            System.out.println("ping");
                             printMessage = false;
                             break;
 
                         case LoginTaken:
-                            sendMessage(new Message(MessageType.Ping));
+                            System.out.println("Login exists");
+
                             printMessage = true;
                             wrongLogin();
                             break;
