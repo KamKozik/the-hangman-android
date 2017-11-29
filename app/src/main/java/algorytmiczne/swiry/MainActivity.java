@@ -11,8 +11,8 @@ import shared.Message;
 import shared.MessageType;
 
 public class MainActivity extends Activity {
-    public boolean gameIsReady=false;
-    public boolean waiting=true;
+    public boolean gameIsReady = false;
+    public boolean waiting = true;
     public static String myLogin;
     private SocketSingleton socketSingleton;
 
@@ -22,7 +22,7 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.socketSingleton= new SocketSingleton();
+        this.socketSingleton = new SocketSingleton();
         View decorView = getWindow().getDecorView();
 
         // Hide the status bar
@@ -33,28 +33,23 @@ public class MainActivity extends Activity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                 | View.SYSTEM_UI_FLAG_IMMERSIVE;
         decorView.setSystemUiVisibility(uiOptions);
-        final EditText mEdit   = (EditText)findViewById(R.id.ipAddressEditText);
+        final EditText mEdit = (EditText) findViewById(R.id.ipAddressEditText);
         Button playButton = findViewById(R.id.playButton);
         final MainActivity main = this;
-        playButton.setOnClickListener(new View.OnClickListener() {
+        playButton.setOnClickListener(view -> {
+            SocketSingleton.initializeIP(mEdit.getText().toString());
 
-            @Override
-            public void onClick(View view) {
+            socketSingleton = socketSingleton.getInstance(main);
+            EditText loginEditText = (EditText) findViewById(R.id.usernameEditText);
+            myLogin = loginEditText.getText().toString();
+            socketSingleton.sendLogin(loginEditText.getText().toString());
+            Intent intent = new Intent(MainActivity.this, GameActivity.class);
+            while (waiting) {
 
-                SocketSingleton.initializeIP(mEdit.getText().toString());
-
-                socketSingleton = socketSingleton.getInstance(main);
-                EditText loginEditText   = (EditText)findViewById(R.id.usernameEditText);
-                myLogin= loginEditText.getText().toString();
-                socketSingleton.sendLogin(loginEditText.getText().toString());
-                Intent intent = new Intent(MainActivity.this, GameActivity.class);
-                while(waiting){
-
-                    if(gameIsReady)startActivity(intent);
-
-                }
+                if (gameIsReady) startActivity(intent);
 
             }
+
         });
     }
 
