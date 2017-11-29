@@ -22,6 +22,7 @@ import android.widget.Space;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import shared.GameState;
 import shared.MessageType;
@@ -122,18 +123,19 @@ public class GameActivity extends Activity {
                         break;
                 }
                 //update blokowania literek
-                for (int i = 0; i < 26; i++) {
-                    Button button = findViewById(300 + i);
-                    Character a = button.getText().toString().toUpperCase().charAt(0);
-                    button.setEnabled(copyGameState.keyboard.get(a));
-                }
+
 
                 //czy nasza tura
                 boolean myTurn = copyGameState.players[myNumberPlayer].hasTurn;
+                myTurn = true;
                 if (myTurn) {
                     //czy jest tura na odgadnięcie litery
                     if (copyGameState.phase == GameState.Phase.Guess) {
-
+                        for (int i = 0; i < 26; i++) {
+                            Button button = findViewById(300 + i);
+                            Character a = button.getText().toString().toUpperCase().charAt(0);
+                            button.setEnabled(copyGameState.keyboard.get(a));
+                        }
                     }
                     //czy jest tura na wybór słowa
                     if (copyGameState.phase == GameState.Phase.ChoosingWord) {
@@ -145,7 +147,11 @@ public class GameActivity extends Activity {
 
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(GameActivity.this);
                         alertDialogBuilder.setTitle("Enter your word here");
-                        alertDialogBuilder.setPositiveButton("OK", (dialogInterface, i) -> socketSingleton.sendWord(wordInput.getText().toString()));
+                        alertDialogBuilder.setPositiveButton("OK", (dialogInterface, i) -> {
+                            socketSingleton.sendWord(wordInput.getText().toString());
+                            Toast.makeText(GameActivity.this, wordInput.getText().toString(),
+                                    Toast.LENGTH_LONG).show();
+                        });
                         AlertDialog alertDialog = alertDialogBuilder.create();
                         alertDialog.setView(wordInput);
                         alertDialog.show();
@@ -153,6 +159,12 @@ public class GameActivity extends Activity {
 
                     } else {
                         drawWord(copyGameState.word);
+                    }
+                } else {
+                    for (int i = 0; i < 26; i++) {
+                        Button button = findViewById(300 + i);
+                        Character a = button.getText().toString().toUpperCase().charAt(0);
+                        button.setEnabled(false);
                     }
                 }
 
