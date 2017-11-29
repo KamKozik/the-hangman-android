@@ -1,21 +1,26 @@
 package algorytmiczne.swiry;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Space;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import shared.GameState;
+import shared.MessageType;
 
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -50,7 +55,7 @@ public class GameActivity extends Activity {
         decorView.setSystemUiVisibility(uiOptions);
 
         createKeyboard();
-        drawWord("BETTER SAFE");
+
     }
 
     @Override
@@ -69,17 +74,17 @@ public class GameActivity extends Activity {
                 /************************* tutaj wpisujemy zmiany, które następują po przyjściu nowego stanu gry*********************/
                 //ustawienie graczy
                 TextView loginEditText = (TextView) findViewById(R.id.usersPaceholder);
-                StringBuilder usersPlaceholder = new StringBuilder();
-                for (int i = 0; i < 4; i++) {
-                    if (copyGameState.players[i].hasTurn) usersPlaceholder.append("T:");
-                    usersPlaceholder.append(copyGameState.players[i].login).append(" ");
-                    usersPlaceholder.append(copyGameState.players[i].points).append(" ");
-                    if (copyGameState.players[i].isConnected) usersPlaceholder.append(" :(");
+                String usersPlaceholder = "";
+                for (int i = 0; i < 2; i++) {
+                    if (copyGameState.players[i].hasTurn) usersPlaceholder += "T:";
+                    usersPlaceholder += copyGameState.players[i].login + " ";
+                    usersPlaceholder += copyGameState.players[i].points + " ";
+                    if (!copyGameState.players[i].isConnected) usersPlaceholder += " :( ";
                 }
-                loginEditText.setText(usersPlaceholder.toString());
+                loginEditText.setText(usersPlaceholder);
 
                 int myNumberPlayer = 0;
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 2; i++) {
                     if (copyGameState.players[i].login.equals(MainActivity.myLogin))
                         myNumberPlayer = i;
                 }
@@ -98,6 +103,8 @@ public class GameActivity extends Activity {
                     //czy jest tura na wybór słowa
                     if (copyGameState.phase == GameState.Phase.ChoosingWord) {
 
+                    }else{
+                        drawWord(copyGameState.word);
                     }
                 }
 
@@ -105,6 +112,8 @@ public class GameActivity extends Activity {
                 /*****************************************************************************************************************/
             }
         });
+
+
     }
 
 
@@ -134,8 +143,9 @@ public class GameActivity extends Activity {
                 letterBtn.setText(letter);
                 letterBtn.setId(300 + alphabetIndexer);
                 letterBtn.setOnClickListener((view) -> {
-                    sendLetter(letter.charAt(0));
+                    socketSingleton.sendLetter(letter.charAt(0));
                 });
+
                 letterBtn.setBackgroundColor(Color.TRANSPARENT);
                 Typeface typeface = ResourcesCompat.getFont(this, R.font.appfont);
                 letterBtn.setTypeface(typeface);
@@ -185,9 +195,6 @@ public class GameActivity extends Activity {
             tr.setLayoutParams(params);
             wordTableLayout.addView(tr, params);
         }
-    }
-
-    public void sendLetter(char letter) {
-        socketSingleton.sendLetter(letter);
+//        wordTableLayout.setStretchAllColumns(true);
     }
 }

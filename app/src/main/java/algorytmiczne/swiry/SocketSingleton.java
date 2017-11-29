@@ -74,6 +74,7 @@ public class SocketSingleton {
     }
 
     public void sendLetter(Character letter){
+        System.out.println("pick letter " + letter);
         sendMessage(new Message(MessageType.PickLetter,letter));
     }
 
@@ -82,18 +83,26 @@ public class SocketSingleton {
     }
 
     public void sendMessage(Message message) {
-        try {
-            boolean flag = true;
-            while(flag)        {
-                if(objectOutputStream!=null){
-                    objectOutputStream.writeObject(message);
-                    flag = false;
-                }
-            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            new Thread(() -> {
+                boolean flag=true;
+                try {
+                    while(flag){
+                        if(objectOutputStream!=null){
+                            objectOutputStream.writeObject(message);
+                            flag=false;
+                        }
+
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+
+
+
     }
 
     private static Message readMessage() {
@@ -159,6 +168,9 @@ public class SocketSingleton {
                     if (message == null)    // client should quit
                         return;
                     switch (message.type) {
+                        case Connect:   // server wants to disconnect
+                            System.out.println((String)message.data);
+                            break;
                         case Disconnect:   // server wants to disconnect
                             exit = true;
                             System.out.println("Server closed connection. Closing client.");

@@ -38,16 +38,14 @@ public class MainActivity extends Activity {
         final MainActivity main = this;
         playButton.setOnClickListener(view -> {
             SocketSingleton.initializeIP(mEdit.getText().toString());
-
             socketSingleton = socketSingleton.getInstance(main);
+
             EditText loginEditText = (EditText) findViewById(R.id.usernameEditText);
             myLogin = loginEditText.getText().toString();
             socketSingleton.sendLogin(loginEditText.getText().toString());
             Intent intent = new Intent(MainActivity.this, GameActivity.class);
             while (waiting) {
-
                 if (gameIsReady) startActivity(intent);
-
             }
 
         });
