@@ -3,6 +3,7 @@ package algorytmiczne.swiry;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -132,6 +133,10 @@ public class GameActivity extends Activity {
                 if (myTurn) {
                     //czy jest tura na odgadnięcie litery
                     if (copyGameState.phase == GameState.Phase.Guess) {
+
+                    }
+                    //czy jest tura na wybór słowa
+                    if (copyGameState.phase == GameState.Phase.ChoosingWord) {
                         final EditText wordInput = new EditText(GameActivity.this);
                         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -140,12 +145,10 @@ public class GameActivity extends Activity {
 
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(GameActivity.this);
                         alertDialogBuilder.setTitle("Enter your word here");
+                        alertDialogBuilder.setPositiveButton("OK", (dialogInterface, i) -> socketSingleton.sendWord(wordInput.getText().toString()));
                         AlertDialog alertDialog = alertDialogBuilder.create();
                         alertDialog.setView(wordInput);
                         alertDialog.show();
-                    }
-                    //czy jest tura na wybór słowa
-                    if (copyGameState.phase == GameState.Phase.ChoosingWord) {
 
 
                     } else {
