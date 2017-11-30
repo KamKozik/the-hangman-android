@@ -124,6 +124,22 @@ public class GameActivity extends Activity {
                 // update worda
                 drawWord(copyGameState.word);
 
+                // check if end game
+                if (copyGameState.phase == GameState.Phase.EndGame) {
+                    StringBuilder blabla = new StringBuilder();
+                    blabla.append("Game has ended!");
+                    for (int i = 0; i < PLAYERS_COUNT; i++) {
+                        blabla.append("\n").append(copyGameState.players[i].login).append(": ").append(copyGameState.players[i].points);
+
+                    }
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(GameActivity.this);
+                    alertDialogBuilder.setTitle("GAME OVER");
+                    alertDialogBuilder.setMessage(blabla.toString());
+                    alertDialogBuilder.setPositiveButton("OK", null);
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                }
                 //czy nasza tura
                 boolean myTurn = copyGameState.players[myNumberPlayer].hasTurn;
                 if (myTurn) {
@@ -212,7 +228,7 @@ public class GameActivity extends Activity {
     }
 
     public void drawWord(String word) {
-        if(word == null) return;
+        if (word == null) return;
 
         List<String> wordRows = new ArrayList<>();
 
@@ -232,7 +248,7 @@ public class GameActivity extends Activity {
                 AppCompatTextView letterView = new AppCompatTextView(this);
                 if (c == ' ') {
                     letterView.setBackgroundResource(R.drawable.letterspace);
-                } else if(c == '_'){
+                } else if (c == '_') {
                     letterView.setBackgroundResource(R.drawable.letterline);
                     letterView.setText(" ");
                 } else {
