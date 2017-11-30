@@ -2,13 +2,9 @@ package algorytmiczne.swiry;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
@@ -25,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import shared.GameState;
-import shared.MessageType;
 
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -38,6 +33,7 @@ import static android.content.ContentValues.TAG;
 public class GameActivity extends Activity {
 
     static final String AVAILABLE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static final int PLAYERS_COUNT = 2;
     private SocketSingleton socketSingleton;
     static final int LINE_MAX_WIDTH = 12;
     private String currentWord = "";
@@ -76,20 +72,22 @@ public class GameActivity extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                /************************* tutaj wpisujemy zmiany, które następują po przyjściu nowego stanu gry*********************/
                 //ustawienie graczy
                 TextView loginEditText = (TextView) findViewById(R.id.usersPaceholder);
-                String usersPlaceholder = "";
-                for (int i = 0; i < 2; i++) {
-                    if (copyGameState.players[i].hasTurn) usersPlaceholder += ":";
-                    usersPlaceholder += copyGameState.players[i].login + " ";
-                    usersPlaceholder += copyGameState.players[i].points + " ";
-                    if (!copyGameState.players[i].isConnected) usersPlaceholder += " :( ";
+                StringBuilder usersPlaceholder = new StringBuilder();
+                for (int i = 0; i < PLAYERS_COUNT; i++) {
+                    if (copyGameState.players[i].hasTurn) {
+                        usersPlaceholder.append("<").append(copyGameState.players[i].login).append(": ").append(copyGameState.players[i].points).append(">");
+                    } else if (!copyGameState.players[i].isConnected) {
+                        usersPlaceholder.append("?").append(copyGameState.players[i].login).append("!");
+                    } else {
+                        usersPlaceholder.append(" ").append(copyGameState.players[i].login).append(": ").append(copyGameState.players[i].points);
+                    }
                 }
-                loginEditText.setText(usersPlaceholder);
+                loginEditText.setText(usersPlaceholder.toString());
 
                 int myNumberPlayer = 0;
-                for (int i = 0; i < 2; i++) {
+                for (int i = 0; i < PLAYERS_COUNT; i++) {
                     if (copyGameState.players[i].login.equals(MainActivity.myLogin))
                         myNumberPlayer = i;
                 }
@@ -122,13 +120,11 @@ public class GameActivity extends Activity {
                         hangman.setImageResource(R.drawable.stage9);
                         break;
                 }
-                //update blokowania literek
-
 
                 //czy nasza tura
                 boolean myTurn = copyGameState.players[myNumberPlayer].hasTurn;
-                myTurn = true;
                 if (myTurn) {
+                    
                     //czy jest tura na odgadnięcie litery
                     if (copyGameState.phase == GameState.Phase.Guess) {
                         for (int i = 0; i < 26; i++) {
@@ -137,6 +133,7 @@ public class GameActivity extends Activity {
                             button.setEnabled(copyGameState.keyboard.get(a));
                         }
                     }
+
                     //czy jest tura na wybór słowa
                     if (copyGameState.phase == GameState.Phase.ChoosingWord) {
                         final EditText wordInput = new EditText(GameActivity.this);
@@ -155,8 +152,6 @@ public class GameActivity extends Activity {
                         AlertDialog alertDialog = alertDialogBuilder.create();
                         alertDialog.setView(wordInput);
                         alertDialog.show();
-
-
                     } else {
                         drawWord(copyGameState.word);
                     }
@@ -167,18 +162,11 @@ public class GameActivity extends Activity {
                         button.setEnabled(false);
                     }
                 }
-
-                //
-                /*****************************************************************************************************************/
             }
         });
-
-
     }
 
-
     public void createKeyboard() {
-
         TableLayout table = findViewById(R.id.lettersTableLayout);
         Log.d(TAG, "Width :" + table.getWidth());
         int alphabetIndexer = 0;
@@ -223,7 +211,6 @@ public class GameActivity extends Activity {
     }
 
     public void drawWord(String word) {
-        int rows = word.length() / LINE_MAX_WIDTH;
         List<String> wordRows = new ArrayList<>();
 
         TableLayout wordTableLayout = findViewById(R.id.wordTableLayout);
