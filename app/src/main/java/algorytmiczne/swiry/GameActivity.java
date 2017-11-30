@@ -33,7 +33,7 @@ import static android.content.ContentValues.TAG;
 public class GameActivity extends Activity {
 
     static final String AVAILABLE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    static final int PLAYERS_COUNT = 2;
+    static final int PLAYERS_COUNT = 4;
     private SocketSingleton socketSingleton;
     static final int LINE_MAX_WIDTH = 12;
     private String currentWord = "";
@@ -121,16 +121,19 @@ public class GameActivity extends Activity {
                         break;
                 }
 
+                // update worda
+                drawWord(copyGameState.word);
+
                 //czy nasza tura
                 boolean myTurn = copyGameState.players[myNumberPlayer].hasTurn;
                 if (myTurn) {
-                    
+
                     //czy jest tura na odgadnięcie litery
                     if (copyGameState.phase == GameState.Phase.Guess) {
                         for (int i = 0; i < 26; i++) {
                             Button button = findViewById(300 + i);
                             Character a = button.getText().toString().toUpperCase().charAt(0);
-                            button.setEnabled(copyGameState.keyboard.get(a));
+                            button.setEnabled(!copyGameState.keyboard.get(a));
                         }
                     }
 
@@ -152,8 +155,6 @@ public class GameActivity extends Activity {
                         AlertDialog alertDialog = alertDialogBuilder.create();
                         alertDialog.setView(wordInput);
                         alertDialog.show();
-                    } else {
-                        drawWord(copyGameState.word);
                     }
                 } else {
                     for (int i = 0; i < 26; i++) {
@@ -211,9 +212,12 @@ public class GameActivity extends Activity {
     }
 
     public void drawWord(String word) {
+        if(word == null) return;
+
         List<String> wordRows = new ArrayList<>();
 
         TableLayout wordTableLayout = findViewById(R.id.wordTableLayout);
+        wordTableLayout.removeAllViews();
         Log.d(TAG, "Width :" + wordTableLayout.getWidth());
 
         String formattedString = WordUtils.wrap(word, LINE_MAX_WIDTH);
@@ -228,10 +232,13 @@ public class GameActivity extends Activity {
                 AppCompatTextView letterView = new AppCompatTextView(this);
                 if (c == ' ') {
                     letterView.setBackgroundResource(R.drawable.letterspace);
+                } else if(c == '_'){
+                    letterView.setBackgroundResource(R.drawable.letterline);
+                    letterView.setText(" ");
                 } else {
                     letterView.setBackgroundResource(R.drawable.letterline);
+                    letterView.setText(String.valueOf(c));
                 }
-                letterView.setText(String.valueOf(c));
                 Typeface typeface = ResourcesCompat.getFont(this, R.font.appfont);
                 letterView.setTypeface(typeface);
                 TableRow.LayoutParams letterParams = new TableRow.LayoutParams();
